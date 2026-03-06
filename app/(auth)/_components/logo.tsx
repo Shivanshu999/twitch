@@ -13,9 +13,14 @@ export const Logo = () => {
             <div>
                 <Image src="/spooky.png" alt="Twitch Logo" width={80} height={80}/>
             </div>
-            <div className="flex flex-col items-center">
-                <p className={cn("text-xl font-semibold", font.className)}>
+            <div className={cn("flex flex-col items-center", font.className)}>
+                <p className="text-xl font-semibold">
                     GameHub
+                </p>
+                <p className=
+                    "text-sm text-muted-foreground"
+                >
+                    Let&apos;s play
                 </p>
             </div>
         </div>
