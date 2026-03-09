@@ -8,7 +8,6 @@ export const Actions = async () => {
 
   return (
     <div className="flex items-center justify-end gap-x-2 ml-4 lg:ml-0">
-
       {!user && (
         <SignInButton mode="modal">
           <Button size="sm" variant="primary">
@@ -19,18 +18,15 @@ export const Actions = async () => {
 
       {!!user && (
         <div className="flex items-center gap-x-4">
-          <Link href={`/u/${user.username}`}>
-            <Button size="sm" variant="ghost">
+          <Button size="sm" variant="ghost">
+            <Link href={`/u/${user.username}`}>
               <Clapperboard className="h-5 w-5 lg:mr-2" />
-              <span className="hidden lg:block">
-                Dashboard
-              </span>
-            </Button>
-            <UserButton afterSignOutUrl="/" />
-          </Link>
+              <span className="hidden lg:block">Dashboard</span>
+              <UserButton afterSignOutUrl="/" />
+            </Link>
+          </Button>
         </div>
       )}
-
     </div>
   );
 };

@@ -21,7 +21,7 @@ export const getSelf = async () => {
   return user;
 };
 
-export const getSelfByUsername = async () => {
+export const getSelfByUsername = async (username: string) => {
   const self = await currentUser();
 
   if (!self || !self.username) {

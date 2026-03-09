@@ -20,22 +20,27 @@ export const UserItem = ({ username, imageUrl, isLive }: UserItemProps) => {
   const href = `/${username}`;
   const isActive = pathname === href
 
-  return <Button asChild variant="ghost"className={cn("w-full h-12",collapsed ? "justify-center": "justfy-start", isActive && "bg-accent text-accent-foreground")} >User Item
-  
-   <Link href={href}>
+  return <Button asChild
+  variant="ghost"
+  className={cn(
+    "w-full h-12",
+    collapsed ? "justify-center" : "justify-start",
+    isActive && "bg-accent text-accent-foreground"
+  )}
+>
+  <Link href={href}>
     <div className={cn(
-      "flex items-center w-full gap-x-4", collapsed && "justify-center"
+      "flex items-center w-full gap-x-4",
+      collapsed && "justify-center"
     )}>
-      <UserAvatar 
-      imageUrl={imageUrl}
-      username={username}
-      isLive={isLive}
-      /> 
+      <UserAvatar
+        imageUrl={imageUrl}
+        username={username}
+        isLive={isLive}
+      />
     </div>
   </Link>
-  
-  
-  </Button>;
+</Button>
   
  
 };

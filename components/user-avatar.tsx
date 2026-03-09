@@ -43,12 +43,12 @@ export const UserAvatar = ({
       >
         <AvatarImage src={imageUrl} className="object-cover" />
         <AvatarFallback>
-          {username[0]}
-          {username[username.length - 1]}
+          {username.slice(0, 2).toUpperCase()}
         </AvatarFallback>
       </Avatar>
+
       {canShowBadge && (
-        <div className="absolute -bottom-3 left-1/2 transform -translate-x-1/2">
+        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 transform">
           <LiveBadge />
         </div>
       )}
@@ -56,8 +56,12 @@ export const UserAvatar = ({
   );
 };
 
-interface UserAvatarSkeletonProps extends VariantProps<typeof avatarSizes> {}
+type UserAvatarSkeletonProps = VariantProps<typeof avatarSizes>;
 
 export const UserAvatarSkeleton = ({ size }: UserAvatarSkeletonProps) => {
-  return <Skeleton className={cn("rounded-full", avatarSizes({ size }))} />;
+  return (
+    <Skeleton
+      className={cn("rounded-full", avatarSizes({ size }))}
+    />
+  );
 };
