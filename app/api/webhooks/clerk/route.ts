@@ -45,10 +45,10 @@ export async function POST(req: Request) {
 
     await db.user.create({
       data: {
-        externalUserId: payload.data.id,
-        username: payload.data.username,
-        imageUrl: payload.data.image_url,
-      },
+      externalUserId: id,
+      username: username ?? id,
+      imageUrl: image_url,
+    },
     });
   }
 
