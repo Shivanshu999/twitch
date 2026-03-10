@@ -1,16 +1,26 @@
-import React from 'react'
+import { getUserByUsername } from "@/lib/user-service";
+import { notFound } from "next/navigation";
+import React from "react";
 
-interface UserpageProps{
-    params: {
-        username: string
-    }
+interface UserPageProps {
+  params: {
+    username: string;
+  };
 }
 
-const UserPage = ({ params }: UserpageProps) => {
+const UserPage = async ({ params }: UserPageProps) => {
+  const user = await getUserByUsername(params.username);
+  if (!user) {
+    return notFound();
+  }
+  const { username } = await params;
+
   return (
-    <div>
-      User: {params.username}
+    <div className="flex flex-col gap-y-4">
+      <p>User: {username}</p>
+      <p>user: {user.id}</p>
     </div>
-  )
-}
-export default UserPage
+  );
+};
+
+export default UserPage;
