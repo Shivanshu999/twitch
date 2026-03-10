@@ -5,11 +5,13 @@ export const getRecommended = async () => {
   const self = await getSelf();
 
   const users = await db.user.findMany({
-    where: {
-      externalUserId: {
-        not: self?.externalUserId,
-      },
-    },
+    where: self
+      ? {
+          id: {
+            not: self.id,
+          },
+        }
+      : undefined,
     orderBy: {
       createdAt: "desc",
     },

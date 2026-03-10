@@ -15,6 +15,7 @@ export const Wrapper = ({children,}: WrapperProps) => {
 
     const  isClient = useIsClient()
     
+    
     if(!isClient) {
         return (
         <aside className={cn("fixed left-0 flex flex-col w-60 h-full bg-background border-r border-[#2D2E35] z-50",
