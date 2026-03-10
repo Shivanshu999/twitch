@@ -53,26 +53,28 @@ export async function POST(req: Request) {
   }
 
   if (eventType === "user.updated") {
-    
+  const { id, username, image_url } = evt.data;
 
-    await db.user.update({
-      where: {
-        externalUserId: payload.data.id,
-      },
-      data: {
-        username: payload.data.username,
-        imageUrl: payload.data.image_url,
-      },
-    });
-  }
+  await db.user.update({
+    where: {
+      externalUserId: id,
+    },
+    data: {
+      username: username ?? id,
+      imageUrl: image_url,
+    },
+  });
+}
 
-  if (eventType === "user.deleted") {
-    await db.user.delete({
-      where: {
-        externalUserId: payload.data.id,
-      },
-    });
-  }
+if (eventType === "user.deleted") {
+  const { id } = evt.data;
+
+  await db.user.delete({
+    where: {
+      externalUserId: id,
+    },
+  });
+}
 
   return new Response("Webhook received", { status: 200 });
 }
