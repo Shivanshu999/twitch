@@ -4,6 +4,7 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ThemeProvider } from "@/components/theme-provider";
 import { dark } from "@clerk/themes";
+import {Toaster} from "sonner"
 
 
 const geistSans = Geist({
@@ -37,11 +38,12 @@ export default function RootLayout({
             defaultTheme="dark"
             storageKey="gamehub-theme"
           >
-       
+        <Toaster theme="light" position="bottom-center"/>
+        
         {children}
         </ThemeProvider>
       </body>
     </html>
     </ClerkProvider>
-  );
+  ); 
 }
