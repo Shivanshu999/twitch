@@ -1,7 +1,7 @@
 import { getSelf } from "./auth-service";
 import { db } from "./db";
 
-export const isFollowing = async (id: string) => {
+export const isFollowingUser = async (id: string) => {
     try{
         const self = await getSelf();
         const otherUser = await db.user.findUnique({
@@ -25,5 +25,20 @@ export const isFollowing = async (id: string) => {
         return !!existingFollow;
     }catch{
         return false;
+    }
+}
+export const followUser = async (id: string) => {
+    const self = await getSelf();
+
+    const otheruser = await db.user.findUnique({
+        where: {id},
+    })
+
+    if(!otheruser){
+        throw new Error("user not found");
+    }
+
+    if(otheruser.id === self.id){
+        throw new Error ("Cannot follow yourself")
     }
 }
