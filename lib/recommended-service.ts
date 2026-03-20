@@ -1,20 +1,53 @@
-import { getSelf } from "./auth-service";
-import { db } from "./db";
+import { db } from "@/lib/db";
+import { getSelf } from "@/lib/auth-service";
 
 export const getRecommended = async () => {
+
   const self = await getSelf();
 
-  const users = await db.user.findMany({
-    where: self
-      ? {
-          id: {
-            not: self.id,
+  if (!self) {
+    return await db.user.findMany({
+      include: {
+        stream: {
+          select: {
+            isLive: true,
           },
-        }
-      : undefined,
+        },
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      take: 10,
+    });
+  }
+
+  const users = await db.user.findMany({
+    where: {
+      NOT: {
+        id: self.id,
+      },
+      followedBy: {
+        none: {
+          followerId: self.id,
+        },
+      },
+      blockedby: {
+        none: {
+          blockerId: self.id,
+        },
+      },
+    },
+    include: {
+      stream: {
+        select: {
+          isLive: true,
+        },
+      },
+    },
     orderBy: {
       createdAt: "desc",
     },
+    take: 10,
   });
 
   return users;

@@ -77,3 +77,75 @@ export const followUser = async (id: string) => {
 
   return follow;
 };
+
+export const unfollowUser = async (id: string) => {
+  const self = await getSelf();
+
+  if (!self) {
+    throw new Error("Unauthorized");
+  }
+
+  const otherUser = await db.user.findUnique({
+    where: {
+      id,
+    },
+  });
+
+  if (!otherUser) {
+    throw new Error("User not found");
+  }
+
+  if (otherUser.id === self.id) {
+    throw new Error("can not unfollow yourself");
+  }
+
+  const existingFollow = await db.follow.findFirst({
+    where: {
+      followerId: self.id,
+      followingId: otherUser.id,
+    },
+  });
+
+  if (!existingFollow) {
+    throw new Error("Not Following");
+  }
+
+  const follow = await db.follow.delete({
+    where: {
+      id: existingFollow.id,
+    },
+    include: {
+      following: true,
+    },
+  });
+  return follow;
+};
+
+export const getFollowedUsers = async () => {
+  try {
+    const self = await getSelf();
+
+    if (!self) {
+      throw new Error("Unauthorized");
+    } 
+
+    const followedUsers = db.follow.findMany({
+      where: {
+        followerId: self.id,
+        following: {
+          blocking: {
+            none: {
+              blockerId: self.id
+            }
+          }
+        }
+      },
+      include: {
+        following: true,
+      },
+    });
+    return followedUsers;
+  } catch {
+    return [];
+  }
+};

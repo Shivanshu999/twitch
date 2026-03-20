@@ -1,20 +1,39 @@
 "use server"
 
-import { followUser } from "@/lib/follow-service";
+import { followUser, unfollowUser } from "@/lib/follow-service";
 import { revalidatePath } from "next/cache";
 
-export  const onFollow = async (id: string) => {
+export const onFollow = async (id: string) => {
 
   try {
-    const followedUser = await followUser(id)
-    revalidatePath("/")
 
-    if(followedUser){
-        revalidatePath(`/${followUser.following.username}`)
+    const followedUser = await followUser(id);
+
+    revalidatePath("/");
+
+    if (followedUser) {
+      revalidatePath(`/${followedUser.following.username}`);
     }
 
     return followedUser;
-} catch (error) {
+
+  } catch (error) {
+    console.error(error);
     throw new Error("Failed to follow user");
+  }
+};
+
+export const onUnFollow = async (id: string) => {
+  try{
+        const unfollowedUser = await unfollowUser(id);
+
+        revalidatePath("/")
+
+        if(unfollowedUser) {
+          revalidatePath(`/${unfollowedUser.following.username}`)
+        }
+        return unfollowedUser;
+  }catch(error){
+      throw new Error("Internal Error")
   }
 }
