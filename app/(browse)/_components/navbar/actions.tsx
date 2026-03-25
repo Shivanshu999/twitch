@@ -20,7 +20,7 @@ export const Actions = async () => {
       {!!user && (
         <div className="flex items-center gap-x-4">
           <Button asChild size="sm" variant="ghost">
-            <Link href={`/${user.username}`}>
+            <Link href={`/u/${user.username}`}>
               <Clapperboard className="h-5 w-5 lg:mr-2" />
               <span className="hidden lg:block">Dashboard</span>
             </Link>
