@@ -15,14 +15,26 @@ export const getSelf = async () => {
   });
 
   if (!user) {
-    user = await db.user.create({
-      data: {
-        externalUserId: self.id,
-        username: self.username ?? self.id,
-        imageUrl: self.imageUrl,
+  const username =
+    self.username ??
+    `user_${self.id.slice(0, 8)}`; 
+
+  user = await db.user.create({
+    data: {
+      externalUserId: self.id,
+      username,
+      imageUrl: self.imageUrl,
+      stream: {
+        create: {
+          title: `${username}'s stream`,
+        },
       },
-    });
-  }
+    },
+    include: {
+      stream: true,
+    },
+  });
+}
 
   return user;
 };

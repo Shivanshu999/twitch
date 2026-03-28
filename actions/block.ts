@@ -1,44 +1,48 @@
-"use server"
+"use server";
 
-import { getSelf } from "@/lib/auth-service"
-import { blockUser, unblockUser } from "@/lib/block-service"
-import { revalidatePath } from "next/cache"
+import { getSelf } from "@/lib/auth-service";
+import { blockUser, unblockUser } from "@/lib/block-service";
+import { revalidatePath } from "next/cache";
+import { RoomServiceClient } from "livekit-server-sdk";
 
-//Block user + remove from stream room
-export const onBlock = async(id: string) => {
-    const self = await getSelf()
+const roomService = new RoomServiceClient(
+  process.env.LIVEKIT_API_URL!,
+  process.env.LIVEKIT_API_KEY!,
+  process.env.LIVEKIT_API_SECRET!
+);
 
-    if(!self){
-        throw new Error("unauthorized")
-    }
+// Block user
+export const onBlock = async (id: string) => {
+  const self = await getSelf();
 
-    const blockedUser = await blockUser(id)
+  if (!self) {
+    throw new Error("unauthorized");
+  }
 
-    try{
-            await roomService.removeParticipant(self.id, id)
-    }catch(error){
-        console.warn("LiveKit removeparticipant failed:", error)
-    }
+  const blockedUser = await blockUser(id);
 
-    revalidatePath(`/u/${self.username}/community`)
+  try {
+    await roomService.removeParticipant(self.id, id);
+  } catch (error) {
+    console.warn("LiveKit removeParticipant failed:", error);
+  }
 
-    return blockedUser;
+  revalidatePath(`/u/${self.username}/community`);
 
-}
+  return blockedUser;
+};
 
 // Unblock user
+export const onUnblock = async (id: string) => {
+  const self = await getSelf();
 
-export const onUnblock = async (id:string) => {
-    const self = await getSelf()
-    if(!self){
-        throw new Error("Unauthorized")
-    }
-    
-    const unblockedUser = await unblockUser(id);
-    
-    revalidatePath(`/u/${self.username}/community`)
+  if (!self) {
+    throw new Error("Unauthorized");
+  }
 
-    return unblockUser;
+  const unblockedUser = await unblockUser(id);
 
+  revalidatePath(`/u/${self.username}/community`);
 
-}
+  return unblockedUser; 
+};

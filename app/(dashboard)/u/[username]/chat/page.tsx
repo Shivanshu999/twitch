@@ -9,8 +9,8 @@ const ChatPage = async () => {
   
 
   if (!stream) {
-    throw new Error("Stream not found");
-  }
+  return <div>No stream found</div>;
+}
 
   return (
     <div className="p-6">
