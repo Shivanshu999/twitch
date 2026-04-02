@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect } from "react";
 import { Participant, Track } from "livekit-client";
 import { useTracks } from "@livekit/components-react";
-import { useEventListener } from "usehooks-ts";
 
 import { VolumeControl } from "./volume-control";
 import { FullscreenControl } from "./fullscreen-control";
@@ -17,64 +16,101 @@ export const LiveVideo = ({ participant }: LiveVideoProps) => {
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [volume, setVolume] = useState(0);
+ const [volume, setVolume] = useState(0);
 
+
+  //  Volume change
   const onVolumeChange = (value: number) => {
-    setVolume(+value);
-    if (videoRef?.current) {
+    setVolume(value);
+
+    if (videoRef.current) {
       videoRef.current.muted = value === 0;
-      videoRef.current.volume = +value * 0.01;
+      videoRef.current.volume = value * 0.01;
     }
   };
 
+  //  Toggle mute
   const toggleMute = () => {
     const isMuted = volume === 0;
 
-    setVolume(isMuted ? 50 : 0);
+    const newVolume = isMuted ? 50 : 0;
+    setVolume(newVolume);
 
-    if (videoRef?.current) {
+    if (videoRef.current) {
       videoRef.current.muted = !isMuted;
       videoRef.current.volume = isMuted ? 0.5 : 0;
     }
   };
 
-  useEffect(() => {
-    onVolumeChange(0);
-  }, []);
+  //  Default volume = muted
 
+useEffect(() => {
+  if (!videoRef.current) return;
+
+  videoRef.current.muted = volume === 0;
+  videoRef.current.volume = volume * 0.01;
+}, [volume]);
+
+  // 🖥️ Fullscreen toggle
   const toggleFullscreen = () => {
-    if (isFullscreen) {
+    if (document.fullscreenElement) {
       document.exitFullscreen();
-    } else if (wrapperRef?.current) {
+    } else if (wrapperRef.current) {
       wrapperRef.current.requestFullscreen();
     }
   };
 
-  const handleFullscreenChange = () => {
-    const isCurrentlyFullscreen = document.fullscreenElement !== null;
-    setIsFullscreen(isCurrentlyFullscreen);
-  };
+  //  Fullscreen listener (FIXED)
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement !== null);
+    };
 
-  useEventListener("fullscreenchange", handleFullscreenChange, wrapperRef);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
 
-  useTracks([Track.Source.Camera, Track.Source.Microphone])
-    .filter((track) => track.participant.identity === participant.identity)
-    .forEach((track) => {
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, []);
+
+  // 🎥 LiveKit tracks handling (FIXED)
+  const tracks = useTracks([
+    Track.Source.Camera,
+    Track.Source.Microphone,
+  ]);
+
+  useEffect(() => {
+    const participantTracks = tracks.filter(
+      (track) => track.participant.identity === participant.identity
+    );
+
+    participantTracks.forEach((track) => {
       if (videoRef.current) {
         track.publication.track?.attach(videoRef.current);
       }
     });
 
+    // cleanup (VERY IMPORTANT)
+    return () => {
+      participantTracks.forEach((track) => {
+        track.publication.track?.detach();
+      });
+    };
+  }, [tracks, participant.identity]);
+
   return (
     <div ref={wrapperRef} className="relative h-full flex">
       <video ref={videoRef} width="100%" />
-      <div className="absolute top-0 h-full w-full opacity-0 hover:opacity-100 hover:transition-all">
+
+      {/* Controls Overlay */}
+      <div className="absolute top-0 h-full w-full opacity-0 hover:opacity-100 transition-opacity">
         <div className="absolute bottom-0 flex h-14 w-full items-center justify-between bg-linear-to-r from-neutral-900 px-4">
           <VolumeControl
             onChange={onVolumeChange}
             value={volume}
             onToggle={toggleMute}
           />
+
           <FullscreenControl
             isFullscreen={isFullscreen}
             onToggle={toggleFullscreen}

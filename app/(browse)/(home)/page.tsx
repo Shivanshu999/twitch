@@ -1,28 +1,13 @@
-import { currentUser } from "@clerk/nextjs/server";
+import { Suspense } from "react";
 
-import { getUserByUsername } from "@/lib/user-service";
-import { StreamPlayer } from "@/components/stream-player";
+import { Results, ResultsSkeleton } from "./_components/results";
 
-interface CreatorPageProps {
-  params: {
-    username: string;
-  };
-}
-
-
-const CreatorPage = async ({ params }: CreatorPageProps) => {
-  const externalUser = await currentUser();
-  const user = await getUserByUsername(params.username);
-
-  if (!user || user.externalUserId !== externalUser?.id || !user.stream) {
-    throw new Error("Unauthorized");
-  }
-
+export default function Page() {
   return (
-    <div className="h-full">
-      <StreamPlayer user={user} stream={user.stream} isFollowing />
+    <div className="h-full p-8 max-w-screen-2xl mx-auto">
+      <Suspense fallback={<ResultsSkeleton />}>
+        <Results />
+      </Suspense>
     </div>
   );
-};
-
-export default CreatorPage;
+}

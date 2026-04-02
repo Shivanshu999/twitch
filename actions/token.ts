@@ -1,8 +1,8 @@
 "use server";
 
-import { ObjectId } from "mongodb";
-
+import { v4 } from "uuid";
 import { AccessToken } from "livekit-server-sdk";
+
 import { getSelf } from "@/lib/auth-service";
 import { getUserById } from "@/lib/user-service";
 import { isBlockedByUser } from "@/lib/block-service";
@@ -12,9 +12,12 @@ export const createViewerToken = async (hostIdentity: string) => {
 
   try {
     self = await getSelf();
-    if(!self) return false;
   } catch {
-    const id = new ObjectId();
+    self = null;
+  }
+
+  if (!self) {
+    const id = v4();
     const username = `guest-${Math.floor(Math.random() * 100000)}`;
     self = { id, username };
   }
@@ -35,7 +38,7 @@ export const createViewerToken = async (hostIdentity: string) => {
     process.env.LIVEKIT_API_KEY!,
     process.env.LIVEKIT_API_SECRET!,
     {
-      identity: isHost ? `Host-${self.id}` : self.id.toString(),
+      identity: isHost ? `Host-${self.id}` : self.id,
       name: self.username,
     }
   );
@@ -47,5 +50,5 @@ export const createViewerToken = async (hostIdentity: string) => {
     canPublishData: true,
   });
 
-  return await Promise.resolve(token.toJwt());
+  return token.toJwt();
 };

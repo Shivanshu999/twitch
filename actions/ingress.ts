@@ -22,7 +22,11 @@ const roomService = new RoomServiceClient(
   process.env.LIVEKIT_API_SECRET!
 );
 
-const ingressClient = new IngressClient(process.env.LIVEKIT_API_URL!);
+const ingressClient = new IngressClient(
+  process.env.LIVEKIT_API_URL!,
+  process.env.LIVEKIT_API_KEY!,
+  process.env.LIVEKIT_API_SECRET!
+);
 
 export const resetIngresses = async (hostIdentity: string) => {
   const ingresses = await ingressClient.listIngress({
@@ -90,5 +94,9 @@ export const createIngress = async (ingressType: IngressInput) => {
   });
 
   revalidatePath(`/u/${self.username}/keys`);
-  return ingress;
+  return {
+  ingressId: ingress.ingressId,
+  url: ingress.url,
+  streamKey: ingress.streamKey,
+};
 };

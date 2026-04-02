@@ -1,7 +1,7 @@
 import React from 'react'
 import { Wrapper } from './wrapper'
 import {Toggle, ToggleSkeleton} from './toggle'
-import Recommended, { RecommendedSkeleton } from './recommended' 
+import  { RecommendedSkeleton, Recommended, } from './recommended' 
 import { getRecommended } from '@/lib/recommended-service'
 import { getFollowedUsers } from '@/lib/follow-service'
 import { Following, FollowingSkeleton } from './following'
@@ -21,7 +21,7 @@ export const Sidebar = async () => {
     </Wrapper>
   )
 }
-
+ 
 export const SidebarSkeleton = () => {
   return (
     <aside className="fixed left-0 flex flex-col w-17.5 lg:w-60 h-full bg-background border-r border-[#2D2E35] z-50">
