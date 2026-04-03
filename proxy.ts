@@ -1,10 +1,19 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
 const isProtectedRoute = createRouteMatcher([
-  "/u(.*)", // ✅ only protect dashboard routes
+  "/u(.*)",
+]);
+
+const isUploadthingRoute = createRouteMatcher([
+  "/api/uploadthing(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
+  // ✅ Allow UploadThing but KEEP Clerk context
+  if (isUploadthingRoute(req)) {
+    return; // clerk still runs, just no protect()
+  }
+
   if (isProtectedRoute(req)) {
     await auth.protect();
   }

@@ -58,6 +58,7 @@ export const StreamPlayer = ({
       <LiveKitRoom
         token={token}
         serverUrl={process.env.NEXT_PUBLIC_LIVEKIT_WS_URL!}
+        connect={true}
         className={cn(
           "grid grid-cols-1 lg:gap-y-0 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-6 h-full",
           collapsed && "lg:grid-cols-2 xl:grid-cols-2 2xl:grid-cols-2"
